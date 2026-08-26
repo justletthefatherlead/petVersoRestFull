@@ -1,5 +1,6 @@
 package com.namassacompany.petVersoRestFull.controller;
 
+import com.namassacompany.petVersoRestFull.dto.CadastroResponseDTO;
 import com.namassacompany.petVersoRestFull.dto.UsuarioCadastroDTO;
 import com.namassacompany.petVersoRestFull.dto.UsuarioResponseDTO;
 import com.namassacompany.petVersoRestFull.model.Usuario;
@@ -21,8 +22,8 @@ public class UsuarioController {
     }
 
     @PostMapping("/api/usuarios")
-    public ResponseEntity<UsuarioResponseDTO> cadastrar(@Valid @RequestBody UsuarioCadastroDTO usuario){
-        UsuarioResponseDTO novoUsuario = usuarioService.cadastrar(usuario);
+    public ResponseEntity<CadastroResponseDTO> cadastrar(@Valid @RequestBody UsuarioCadastroDTO usuario){
+        CadastroResponseDTO novoUsuario = usuarioService.cadastrar(usuario);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(novoUsuario);
     }

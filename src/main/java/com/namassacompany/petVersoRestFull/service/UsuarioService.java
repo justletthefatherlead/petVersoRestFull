@@ -1,7 +1,8 @@
 package com.namassacompany.petVersoRestFull.service;
 
+import com.namassacompany.petVersoRestFull.dto.CadastroResponseDTO;
+import com.namassacompany.petVersoRestFull.dto.TokenResponseDTO;
 import com.namassacompany.petVersoRestFull.dto.UsuarioCadastroDTO;
-import com.namassacompany.petVersoRestFull.dto.UsuarioResponseDTO;
 import com.namassacompany.petVersoRestFull.exception.EmailJaCadastradoException;
 import com.namassacompany.petVersoRestFull.exception.TelefoneJaCadastradoException;
 import com.namassacompany.petVersoRestFull.model.Usuario;
@@ -9,18 +10,21 @@ import com.namassacompany.petVersoRestFull.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+
 @Service
 public class UsuarioService {
 
     private final UsuarioRepository usuarioRepository;
     private final PasswordEncoder passwordEncoder;
+    private final AuthService authService;
 
-    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder) {
+    public UsuarioService(UsuarioRepository usuarioRepository, PasswordEncoder passwordEncoder, AuthService authService) {
         this.usuarioRepository = usuarioRepository;
         this.passwordEncoder = passwordEncoder;
+        this.authService = authService;
     }
 
-    public UsuarioResponseDTO cadastrar(UsuarioCadastroDTO dto){
+    public CadastroResponseDTO cadastrar(UsuarioCadastroDTO dto){
 
         if(usuarioRepository.existsByEmail(dto.email())){
             throw new EmailJaCadastradoException("o email "+ dto.email()+" ja esta cadastrado.");
@@ -37,13 +41,17 @@ public class UsuarioService {
                 senhaHash
         );
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
-        UsuarioResponseDTO response = new UsuarioResponseDTO(
+
+         TokenResponseDTO sessao = authService.iniciarSessao(usuarioSalvo);
+
+        return new CadastroResponseDTO(
                 usuarioSalvo.getIdUsuario(),
                 usuarioSalvo.getNome(),
-                usuarioSalvo.getEmail()
+                usuarioSalvo.getEmail(),
+                sessao.token()
         );
-
-        return response;
-
     }
+
+
+
 }

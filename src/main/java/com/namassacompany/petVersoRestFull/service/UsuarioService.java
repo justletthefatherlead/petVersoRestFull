@@ -36,6 +36,7 @@ public class UsuarioService {
         Usuario usuario = new Usuario(
                 null,
                 dto.nome(),
+                null,
                 dto.email(),
                 dto.telefone(),
                 senhaHash

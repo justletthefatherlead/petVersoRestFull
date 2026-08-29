@@ -27,7 +27,7 @@ public class AuthService {
     }
 
     public TokenResponseDTO login(LoginDTO dto) {
-        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByEmail(dto.email());
+        Optional<Usuario> usuarioEncontrado = usuarioRepository.findByEmail(dto.login());
         if (usuarioEncontrado.isEmpty()) {
             throw new CredenciaisInvalidasException("Email ou senha invalidos");
         }

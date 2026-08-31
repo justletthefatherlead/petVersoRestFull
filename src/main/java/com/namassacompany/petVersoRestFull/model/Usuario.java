@@ -1,9 +1,6 @@
 package com.namassacompany.petVersoRestFull.model;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.Id;
+import jakarta.persistence.*;
 
 import java.util.Objects;
 
@@ -26,6 +23,10 @@ public class Usuario {
     @Column(name = "telefone")
     private String telefone;
 
+    @Lob
+    @Column(name = "foto")
+    private byte[] foto;
+
     @Column(name = "senha")
     private String senha;
 
@@ -44,12 +45,14 @@ public class Usuario {
 
 
 
-    public Usuario(Long idUsuario, String nome, String apelido, String email, String telefone, String senha) {
+
+    public Usuario(Long idUsuario, String nome, String apelido, String email, String telefone, byte[] foto, String senha) {
         this.idUsuario = idUsuario;
         this.nome = nome;
         this.apelido = apelido;
         this.email = email;
         this.telefone = telefone;
+        this.foto = foto;
         this.senha = senha;
     }
 
@@ -88,6 +91,10 @@ public class Usuario {
     public void setTelefone(String telefone) {
         this.telefone = telefone;
     }
+
+    public byte[] getFoto() {return foto;}
+
+    public void setFoto(byte[] foto) {this.foto = foto;}
 
     public String getSenha() {
         return senha;

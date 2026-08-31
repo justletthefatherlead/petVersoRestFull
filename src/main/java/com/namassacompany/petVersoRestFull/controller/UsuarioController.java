@@ -1,10 +1,7 @@
 package com.namassacompany.petVersoRestFull.controller;
 
-import com.namassacompany.petVersoRestFull.dto.CadastroResponseDTO;
-import com.namassacompany.petVersoRestFull.dto.UsuarioCadastroDTO;
-import com.namassacompany.petVersoRestFull.dto.UsuarioResponseDTO;
+import com.namassacompany.petVersoRestFull.dto.*;
 import com.namassacompany.petVersoRestFull.model.Usuario;
-import com.namassacompany.petVersoRestFull.security.TokenAuthFilter;
 import com.namassacompany.petVersoRestFull.service.UsuarioService;
 import jakarta.validation.Valid;
 import org.springframework.http.HttpStatus;
@@ -29,10 +26,21 @@ public class UsuarioController {
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(novoUsuario);
     }
-@GetMapping("/perfil")
+    @GetMapping("/perfil")
     public ResponseEntity<UsuarioResponseDTO> perfilUsuario(){
         Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+
         return ResponseEntity.ok(new UsuarioResponseDTO(usuario));
 
     }
+
+    @PutMapping("/atualizarPerfil")
+    public ResponseEntity<UsuarioPerfilDTO> atualizarPerfil(@RequestBody AtualizarPerfilDTO atUsario){
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        UsuarioPerfilDTO perfilAtualizado = usuarioService.atualizarPerfil(atUsario,usuario);
+        return ResponseEntity.ok(perfilAtualizado);
+
+
+    }
+
 }

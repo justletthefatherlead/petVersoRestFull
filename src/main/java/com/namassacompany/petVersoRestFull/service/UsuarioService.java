@@ -1,14 +1,14 @@
 package com.namassacompany.petVersoRestFull.service;
 
-import com.namassacompany.petVersoRestFull.dto.CadastroResponseDTO;
-import com.namassacompany.petVersoRestFull.dto.TokenResponseDTO;
-import com.namassacompany.petVersoRestFull.dto.UsuarioCadastroDTO;
+import com.namassacompany.petVersoRestFull.dto.*;
 import com.namassacompany.petVersoRestFull.exception.EmailJaCadastradoException;
 import com.namassacompany.petVersoRestFull.exception.TelefoneJaCadastradoException;
 import com.namassacompany.petVersoRestFull.model.Usuario;
 import com.namassacompany.petVersoRestFull.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+
+import java.util.Base64;
 
 
 @Service
@@ -39,6 +39,7 @@ public class UsuarioService {
                 null,
                 dto.email(),
                 dto.telefone(),
+                null,
                 senhaHash
         );
         Usuario usuarioSalvo = usuarioRepository.save(usuario);
@@ -50,6 +51,28 @@ public class UsuarioService {
                 usuarioSalvo.getNome(),
                 usuarioSalvo.getEmail(),
                 sessao.token()
+        );
+    }
+
+    public UsuarioPerfilDTO atualizarPerfil(AtualizarPerfilDTO dto, Usuario usuario){
+        if(dto.apelido()!= null ){
+            usuario.setApelido(dto.apelido());
+        }
+        if (dto.fotoBase64() != null){
+            usuario.setFoto(Base64.getDecoder().decode(dto.fotoBase64()));
+        }
+        Usuario usuariosalvo = usuarioRepository.save(usuario);
+
+        String fotoResposta = (usuariosalvo.getFoto()!= null) ? Base64.getEncoder().encodeToString(usuariosalvo.getFoto())
+                : null;
+
+        return new UsuarioPerfilDTO(
+                usuariosalvo.getIdUsuario(),
+                usuariosalvo.getNome(),
+                usuariosalvo.getApelido(),
+                usuariosalvo.getEmail(),
+                fotoResposta
+
         );
     }
 

@@ -24,7 +24,7 @@ public class Usuario {
     private String telefone;
 
     @Lob
-    @Column(name = "foto")
+    @Column(name = "foto", columnDefinition = "MEDIUMBLOB")
     private byte[] foto;
 
     @Column(name = "senha")

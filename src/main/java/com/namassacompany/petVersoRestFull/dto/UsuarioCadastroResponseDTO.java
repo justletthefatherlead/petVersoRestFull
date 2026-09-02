@@ -1,6 +1,6 @@
 package com.namassacompany.petVersoRestFull.dto;
 
-public record CadastroResponseDTO (
+public record UsuarioCadastroResponseDTO(
         Long idUsuario,
         String nomeDeUsuario,
         String email,

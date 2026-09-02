@@ -24,7 +24,7 @@ public class UsuarioService {
         this.authService = authService;
     }
 
-    public CadastroResponseDTO cadastrar(UsuarioCadastroDTO dto){
+    public UsuarioCadastroResponseDTO cadastrar(UsuarioCadastroDTO dto){
 
         if(usuarioRepository.existsByEmail(dto.email())){
             throw new EmailJaCadastradoException("o email "+ dto.email()+" ja esta cadastrado.");
@@ -46,7 +46,7 @@ public class UsuarioService {
 
          TokenResponseDTO sessao = authService.iniciarSessao(usuarioSalvo);
 
-        return new CadastroResponseDTO(
+        return new UsuarioCadastroResponseDTO(
                 usuarioSalvo.getIdUsuario(),
                 usuarioSalvo.getNome(),
                 usuarioSalvo.getEmail(),
@@ -63,19 +63,11 @@ public class UsuarioService {
         }
         Usuario usuariosalvo = usuarioRepository.save(usuario);
 
-        String fotoResposta = (usuariosalvo.getFoto()!= null) ? Base64.getEncoder().encodeToString(usuariosalvo.getFoto())
-                : null;
-
-        return new UsuarioPerfilDTO(
-                usuariosalvo.getIdUsuario(),
-                usuariosalvo.getNome(),
-                usuariosalvo.getApelido(),
-                usuariosalvo.getEmail(),
-                fotoResposta
-
-        );
+        return new UsuarioPerfilDTO(usuariosalvo);
     }
 
-
+    public UsuarioPerfilDTO vizualizarPefil(Usuario usuario){
+        return new UsuarioPerfilDTO(usuario);
+    }
 
 }

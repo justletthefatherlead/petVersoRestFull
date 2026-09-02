@@ -21,16 +21,16 @@ public class UsuarioController {
     }
 
     @PostMapping("/cadastrar")
-    public ResponseEntity<CadastroResponseDTO> cadastrar(@Valid @RequestBody UsuarioCadastroDTO usuario){
-        CadastroResponseDTO novoUsuario = usuarioService.cadastrar(usuario);
+    public ResponseEntity<UsuarioCadastroResponseDTO> cadastrar(@Valid @RequestBody UsuarioCadastroDTO usuario){
+        UsuarioCadastroResponseDTO novoUsuario = usuarioService.cadastrar(usuario);
         return ResponseEntity.status(HttpStatus.CREATED)
                 .body(novoUsuario);
     }
     @GetMapping("/perfil")
-    public ResponseEntity<UsuarioResponseDTO> perfilUsuario(){
+    public ResponseEntity<UsuarioPerfilDTO> perfilUsuario(){
         Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
 
-        return ResponseEntity.ok(new UsuarioResponseDTO(usuario));
+        return ResponseEntity.ok(usuarioService.vizualizarPefil(usuario));
 
     }
 
@@ -42,5 +42,6 @@ public class UsuarioController {
 
 
     }
-
 }
+
+

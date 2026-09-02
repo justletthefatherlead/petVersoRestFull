@@ -13,6 +13,6 @@ public record UsuarioPerfilDTO(
 ) {
     public UsuarioPerfilDTO(Usuario usuario){
         this(usuario.getIdUsuario(), usuario.getNome(), usuario.getApelido(),usuario.getEmail(),
-                Base64.getEncoder().encodeToString(usuario.getFoto()));
+                (usuario.getFoto() != null) ? Base64.getEncoder().encodeToString(usuario.getFoto()): null);
     }
 }

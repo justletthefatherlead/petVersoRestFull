@@ -11,6 +11,11 @@ public record PetCadastroResponseDTO(
         String especie,
         Porte porte,
         Double peso,
-        Sexo sexo
+        Sexo sexo,
+        String codigoVinculo
 ) {
+    public PetCadastroResponseDTO(Pet pet){
+        this(pet.getIdPet(), pet.getNome(), pet.getRaca(), pet.getEspecie(), pet.getPorte(), pet.getPeso(), pet.getSexo(),
+                pet.getCodigoVinculo());
+    }
 }

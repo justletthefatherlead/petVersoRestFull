@@ -7,6 +7,7 @@ import com.namassacompany.petVersoRestFull.model.Usuario;
 import com.namassacompany.petVersoRestFull.repository.UsuarioRepository;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.Base64;
 
@@ -23,7 +24,7 @@ public class UsuarioService {
         this.passwordEncoder = passwordEncoder;
         this.authService = authService;
     }
-
+    @Transactional
     public UsuarioCadastroResponseDTO cadastrar(UsuarioCadastroDTO dto){
 
         if(usuarioRepository.existsByEmail(dto.email())){

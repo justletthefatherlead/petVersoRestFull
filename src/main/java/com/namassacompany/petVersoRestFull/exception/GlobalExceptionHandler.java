@@ -40,4 +40,10 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.UNAUTHORIZED)
                 .body(ex.getMessage());
     }
+    @ExceptionHandler(PetNaoEncontradoException.class)
+    public ResponseEntity<String> handPetNaoEcontrado(PetNaoEncontradoException ex){
+        return ResponseEntity
+                .status(HttpStatus.NOT_FOUND)
+                .body(ex.getMessage());
+    }
 }

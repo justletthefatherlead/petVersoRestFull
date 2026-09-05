@@ -16,7 +16,7 @@ public class AuthController {
     public AuthController(AuthService authService) {
         this.authService = authService;
     }
-    @PostMapping("/api/login")
+        @PostMapping("/api/login")
     public ResponseEntity<TokenResponseDTO> login(@Valid @RequestBody LoginDTO dto){
     TokenResponseDTO novoLogin = authService.login(dto);
     return ResponseEntity.status(HttpStatus.OK).body(novoLogin);

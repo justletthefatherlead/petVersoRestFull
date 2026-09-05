@@ -17,10 +17,10 @@ public class Usuario {
     @Column(name = "apelido")
     private String apelido;
 
-    @Column(name = "email")
+    @Column(name = "email", unique = true)
     private String email;
 
-    @Column(name = "telefone")
+    @Column(name = "telefone", unique = true)
     private String telefone;
 
     @Lob

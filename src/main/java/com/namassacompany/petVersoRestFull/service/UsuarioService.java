@@ -30,8 +30,9 @@ public class UsuarioService {
             throw new EmailJaCadastradoException("o email "+ dto.email()+" ja esta cadastrado.");
         }
         if(usuarioRepository.existsByTelefone(dto.telefone())){
-            throw new TelefoneJaCadastradoException("o numero de telefone "+ dto.telefone()+ "ja esta cadastrado");
+            throw new TelefoneJaCadastradoException("o telefone "  + dto.telefone()+" já foi cadastrado.");
         }
+
         String senhaHash = passwordEncoder.encode(dto.senha());
         Usuario usuario = new Usuario(
                 null,

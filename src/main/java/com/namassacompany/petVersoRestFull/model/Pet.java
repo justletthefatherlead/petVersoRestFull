@@ -39,7 +39,7 @@ public class Pet {
     @Column(name = "foto", columnDefinition = "MEDIUMBLOB")
     private byte[] foto;
 
-    @Column(name = "codigoVinculo")
+    @Column(name = "codigoVinculo", unique = true)
     private String codigoVinculo;
 
     @ElementCollection

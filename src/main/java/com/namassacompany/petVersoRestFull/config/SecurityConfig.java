@@ -12,22 +12,25 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 
 @Configuration
 public class SecurityConfig {
+    private final TokenAuthFilter tokenAuthFilter;
+    public SecurityConfig(TokenAuthFilter tokenAuthFilter) {
+        this.tokenAuthFilter = tokenAuthFilter;
+    }
     @Bean
     public PasswordEncoder passwordEncoder(){
         return new BCryptPasswordEncoder();
     }
-    private final TokenAuthFilter tokenAuthFilter;
-
-    public SecurityConfig(TokenAuthFilter tokenAuthFilter) {
-        this.tokenAuthFilter = tokenAuthFilter;
-    }
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http)throws Exception{
-        http.csrf(csrf -> csrf.disable())
+        http
+                .csrf(csrf -> csrf.disable())
                 .authorizeHttpRequests(auth ->auth
-                        .requestMatchers(HttpMethod.POST,"/api/usuarios/cadastrar","/api/login").permitAll().requestMatchers("/error").permitAll()
-                        .anyRequest().authenticated()).addFilterBefore(tokenAuthFilter, UsernamePasswordAuthenticationFilter.class);
+                        .requestMatchers(HttpMethod.POST,"/api/usuarios/cadastrar","/api/login").permitAll()
+                        .requestMatchers("/error").permitAll()
+                        .anyRequest().authenticated()
+                )
+                .addFilterBefore(tokenAuthFilter, UsernamePasswordAuthenticationFilter.class);
         return http.build();
     }
 }

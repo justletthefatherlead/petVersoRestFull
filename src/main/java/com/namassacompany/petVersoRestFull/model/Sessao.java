@@ -7,7 +7,7 @@ import java.util.Objects;
 @Entity
 public class Sessao {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idSession")
 
     private Long idSession;

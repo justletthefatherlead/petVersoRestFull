@@ -9,7 +9,7 @@ import java.util.Objects;
 @Entity
 public class Pet {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_pet")
     private Long idPet;
 

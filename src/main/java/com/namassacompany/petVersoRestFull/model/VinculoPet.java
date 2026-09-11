@@ -8,7 +8,7 @@ import java.util.Objects;
 @Entity
 public class VinculoPet {
     @Id
-    @GeneratedValue
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id_vinculo")
     private Long id;
 

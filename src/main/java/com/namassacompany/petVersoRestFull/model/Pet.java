@@ -2,7 +2,7 @@ package com.namassacompany.petVersoRestFull.model;
 
 import jakarta.persistence.*;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.List;
 import java.util.Objects;
 
@@ -23,7 +23,7 @@ public class Pet {
     private String especie;
 
     @Column(name = "data_nascimento")
-    private LocalDateTime dataDeNascimento;
+    private LocalDate dataDeNascimento;
 
     @Enumerated(EnumType.STRING)
     @Column(name = "porte")
@@ -52,11 +52,11 @@ public class Pet {
     private List<String> personalidades;
 
 
-    public LocalDateTime getDataDeNascimento() {
+    public LocalDate getDataDeNascimento() {
         return dataDeNascimento;
     }
 
-    public void setDataDeNascimento(LocalDateTime dataDeNascimento) {
+    public void setDataDeNascimento(LocalDate dataDeNascimento) {
         this.dataDeNascimento = dataDeNascimento;
     }
 
@@ -72,7 +72,7 @@ public class Pet {
         return Objects.hashCode(idPet);
     }
 
-    public Pet(Long idPet, String nome, String raca, String especie, LocalDateTime dataDeNascimento, Porte porte, Double peso, Sexo sexo, String perfilSensibilidade, byte[] foto, String codigoVinculo, List<String> personalidades) {
+    public Pet(Long idPet, String nome, String raca, String especie, LocalDate dataDeNascimento, Porte porte, Double peso, Sexo sexo, String perfilSensibilidade, byte[] foto, String codigoVinculo, List<String> personalidades) {
         this.idPet = idPet;
         this.nome = nome;
         this.raca = raca;

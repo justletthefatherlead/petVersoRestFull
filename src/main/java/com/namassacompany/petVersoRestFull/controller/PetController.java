@@ -1,5 +1,6 @@
 package com.namassacompany.petVersoRestFull.controller;
 
+import com.namassacompany.petVersoRestFull.dto.AtualizarPetDTO;
 import com.namassacompany.petVersoRestFull.dto.PetCadastroDTO;
 import com.namassacompany.petVersoRestFull.dto.PetCadastroResponseDTO;
 import com.namassacompany.petVersoRestFull.dto.PetPerfilDTO;
@@ -31,5 +32,12 @@ public class PetController {
         Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
         PetPerfilDTO visualizarPetPerfil = petService.visualizarPetPerfil(id, usuario);
         return ResponseEntity.ok(visualizarPetPerfil);
+    }
+
+    @PutMapping("/{id}/atualizarPetPerfil")
+    public ResponseEntity<PetPerfilDTO> addPerfilSensiAndPersonalit(@PathVariable Long id, @RequestBody AtualizarPetDTO pdto){
+        Usuario usuario = (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+        PetPerfilDTO atualizarPetPerfil = petService.addPerfilSensiAndPersonalit(id, pdto,usuario);
+        return ResponseEntity.ok(atualizarPetPerfil);
     }
 }

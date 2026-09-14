@@ -4,14 +4,14 @@ import com.namassacompany.petVersoRestFull.model.Pet;
 import com.namassacompany.petVersoRestFull.model.Porte;
 import com.namassacompany.petVersoRestFull.model.Sexo;
 
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 public record PetCadastroResponseDTO(
         Long id,
         String nome,
         String raca,
         String especie,
-        LocalDateTime dataDeNascimento,
+        LocalDate dataDeNascimento,
         Porte porte,
         Double peso,
         Sexo sexo,

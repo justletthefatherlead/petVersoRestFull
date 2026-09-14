@@ -1,5 +1,6 @@
 package com.namassacompany.petVersoRestFull.service;
 
+import com.namassacompany.petVersoRestFull.dto.AtualizarPetDTO;
 import com.namassacompany.petVersoRestFull.dto.PetCadastroDTO;
 import com.namassacompany.petVersoRestFull.dto.PetCadastroResponseDTO;
 import com.namassacompany.petVersoRestFull.dto.PetPerfilDTO;
@@ -13,6 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
+import java.util.Base64;
 
 @Service
 public class PetService {
@@ -28,6 +30,10 @@ public class PetService {
     @Transactional
    public PetCadastroResponseDTO cadastrar(PetCadastroDTO petdto, Usuario usuario){
        String codigoVinculo = gerarCodigoVinculo();
+        byte[] foto= null;
+        if (petdto.fotoBase64() != null){
+           foto =(Base64.getDecoder().decode(petdto.fotoBase64()));
+        }
         Pet pet = new Pet(
                 null,
                 petdto.nome(),
@@ -38,7 +44,7 @@ public class PetService {
                 petdto.peso(),
                 petdto.sexo(),
                 null,
-                null,
+                foto,
                 codigoVinculo,
                 new ArrayList<>()
 
@@ -72,7 +78,18 @@ public class PetService {
         return new PetPerfilDTO(pet);
    }
 
-
+    public PetPerfilDTO addPerfilSensiAndPersonalit(Long idPet, AtualizarPetDTO pdto, Usuario usuario){
+        Pet pet = petRepository.findById(idPet).orElseThrow(()-> new PetNaoEncontradoException("Pet nao encontrado"));
+        boolean temVinculo = vinculoPetRepository.existsByPetAndUsuario(pet, usuario);
+        if(!temVinculo){ throw new PetNaoEncontradoException("Pet nao encontrado");}
+        if(pdto.perfilDeSensibilidade()!= null){
+            pet.setPerfilSensibilidade(pdto.perfilDeSensibilidade());
+        }
+        if (pdto.personalidades()!= null){
+            pet.setPersonalidades(pdto.personalidades());
+        }
+        return new PetPerfilDTO(petRepository.save(pet));
+    }
 
 
 

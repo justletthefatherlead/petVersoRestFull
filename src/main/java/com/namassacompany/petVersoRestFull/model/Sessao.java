@@ -9,7 +9,6 @@ public class Sessao {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "idSession")
-
     private Long idSession;
 
     @Column(name = "token", unique = true)

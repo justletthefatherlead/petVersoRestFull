@@ -1,9 +1,6 @@
 package com.namassacompany.petVersoRestFull.repository;
 
-import com.namassacompany.petVersoRestFull.model.Pet;
-import com.namassacompany.petVersoRestFull.model.StatusDeVinculo;
-import com.namassacompany.petVersoRestFull.model.Usuario;
-import com.namassacompany.petVersoRestFull.model.VinculoPet;
+import com.namassacompany.petVersoRestFull.model.*;
 import org.springframework.data.domain.Example;
 import org.springframework.data.jpa.repository.JpaRepository;
 
@@ -18,6 +15,7 @@ public interface VinculoPetRepository extends JpaRepository<VinculoPet, Long> {
 
     Optional<VinculoPet> findByPetAndUsuario(Pet pet, Usuario usuario);
 
-    List<VinculoPet> findByUsuario(Usuario usuario);
+    List<VinculoPet> findByUsuarioAndStatus(Usuario usuario, StatusDeVinculo statusDeVinculo);
     List<VinculoPet> findByPetAndStatus(Pet pet, StatusDeVinculo status);
+    List<VinculoPet> findByUsuarioAndPapel(Usuario usuario, Papel papel);
 }

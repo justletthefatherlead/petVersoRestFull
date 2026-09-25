@@ -46,4 +46,17 @@ public class GlobalExceptionHandler {
                 .status(HttpStatus.NOT_FOUND)
                 .body(ex.getMessage());
     }
+    @ExceptionHandler(StatusDeVinculoInvalidoException.class)
+    public ResponseEntity<String> handleStatusDeVinculoInvalido(StatusDeVinculoInvalidoException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
+
+    @ExceptionHandler(IllegalArgumentException.class)
+    public ResponseEntity<String> handleIllegalArgument(IllegalArgumentException ex){
+        return  ResponseEntity.status(HttpStatus.BAD_REQUEST).body(ex.getMessage());
+    }
+    @ExceptionHandler(IllegalStateException.class)
+    public ResponseEntity<String> handleIllegalState(IllegalStateException ex){
+        return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
+    }
 }

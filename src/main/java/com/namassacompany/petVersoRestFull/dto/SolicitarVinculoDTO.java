@@ -1,4 +1,8 @@
 package com.namassacompany.petVersoRestFull.dto;
 
-public class SolicitarVinculoDTO {
+import jakarta.validation.constraints.NotBlank;
+
+public record SolicitarVinculoDTO(
+       @NotBlank String codigoVinculo
+) {
 }

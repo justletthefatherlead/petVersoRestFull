@@ -1,10 +1,8 @@
 package com.namassacompany.petVersoRestFull.service;
 
-import com.namassacompany.petVersoRestFull.dto.AtualizarPetDTO;
-import com.namassacompany.petVersoRestFull.dto.PetCadastroDTO;
-import com.namassacompany.petVersoRestFull.dto.PetCadastroResponseDTO;
-import com.namassacompany.petVersoRestFull.dto.PetPerfilDTO;
+import com.namassacompany.petVersoRestFull.dto.*;
 import com.namassacompany.petVersoRestFull.exception.PetNaoEncontradoException;
+import com.namassacompany.petVersoRestFull.exception.StatusDeVinculoInvalidoException;
 import com.namassacompany.petVersoRestFull.model.*;
 import com.namassacompany.petVersoRestFull.repository.PetRepository;
 import com.namassacompany.petVersoRestFull.repository.VinculoPetRepository;
@@ -15,6 +13,8 @@ import java.security.SecureRandom;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class PetService {
@@ -72,16 +72,16 @@ public class PetService {
    public PetPerfilDTO visualizarPetPerfil(Long idPet, Usuario usuarioAutenticado){
         Pet pet = petRepository.findById(idPet).
                 orElseThrow(() -> new PetNaoEncontradoException("Pet nao encontrado"));
-        boolean temVinculo = vinculoPetRepository.existsByPetAndUsuario(pet, usuarioAutenticado);
-        if(!temVinculo){ throw new PetNaoEncontradoException("Pet nao encontrado");}
-
+        buscarVinculoAceito(pet, usuarioAutenticado);
         return new PetPerfilDTO(pet);
    }
 
     public PetPerfilDTO addPerfilSensiAndPersonalit(Long idPet, AtualizarPetDTO pdto, Usuario usuario){
         Pet pet = petRepository.findById(idPet).orElseThrow(()-> new PetNaoEncontradoException("Pet nao encontrado"));
-        boolean temVinculo = vinculoPetRepository.existsByPetAndUsuario(pet, usuario);
-        if(!temVinculo){ throw new PetNaoEncontradoException("Pet nao encontrado");}
+        VinculoPet vinculo = buscarVinculoAceito(pet, usuario);
+        if (vinculo.getPapel()!= Papel.DONO){
+            throw new PetNaoEncontradoException("Seu papel nao perimite fazer alterações");
+        }
         if(pdto.perfilDeSensibilidade()!= null){
             pet.setPerfilSensibilidade(pdto.perfilDeSensibilidade());
         }
@@ -91,7 +91,112 @@ public class PetService {
         return new PetPerfilDTO(petRepository.save(pet));
     }
 
+    public SolicitarVinculoResponseDTO solicitarVinculo(Usuario usuario, SolicitarVinculoDTO dto){
+        String codigo  = dto.codigoVinculo();
+        Pet pet = petRepository.findByCodigoVinculo(codigo)
+                .orElseThrow(() -> new IllegalArgumentException("Código de vínculo inválido"));
 
+        Optional<VinculoPet> vinculoExistente = vinculoPetRepository.findByPetAndUsuario(pet, usuario);
+            VinculoPet vinculo;
+            if(vinculoExistente.isPresent()){
+                vinculo = vinculoExistente.get();
+                switch (vinculo.getStatus()){
+                    case PENDENTE -> throw new IllegalStateException("Você já possui uma soliciçao para este pet.");
+                    case ACEITO -> throw new IllegalStateException("Você já possui vinculo com este pet.");
+                    case RECUSADO -> {
+                        vinculo.setStatus(StatusDeVinculo.PENDENTE);
+                        vinculo.setDataDeCriacao(LocalDateTime.now());
+                    }
+                }
+            }else {
+                vinculo = new VinculoPet();
+                vinculo.setPet(pet);
+                vinculo.setUsuario(usuario);
+                vinculo.setPapel(Papel.SUPORTE);
+                vinculo.setStatus(StatusDeVinculo.PENDENTE);
+                vinculo.setDataDeCriacao(LocalDateTime.now());
+
+
+            }
+            vinculoPetRepository.save(vinculo);
+            var dados = new SolicitarVinculoResponseDTO.DadosSolicitacaoDTO(
+                    vinculo.getId(),
+                    codigo,
+                    pet.getNome(),
+                    vinculo.getDataDeCriacao()
+            );
+            return new SolicitarVinculoResponseDTO(
+                    true,
+                    "Solicitação enviada com sucesso! Aguarde a confirmação do tutor",
+                    StatusDeVinculo.PENDENTE,
+                    dados
+            );
+    }
+
+    @Transactional(readOnly = true)
+    public List<SolicitacaoPendenteDTO> listarSolicitacoes(Usuario usuario){
+        List<VinculoPet> vinculosDono = vinculoPetRepository.findByUsuarioAndPapel(usuario, Papel.DONO);
+        List<SolicitacaoPendenteDTO> resultado = new ArrayList<>();
+
+        for (VinculoPet vinculoDono : vinculosDono) {
+            if (vinculoDono.getStatus()!= StatusDeVinculo.ACEITO){
+                continue;
+            }
+            Pet pet = vinculoDono.getPet();
+
+            List<VinculoPet> pendentes = vinculoPetRepository.findByPetAndStatus(pet,StatusDeVinculo.PENDENTE);
+            for (VinculoPet solicitacao : pendentes){
+                resultado.add(new SolicitacaoPendenteDTO(
+                        solicitacao.getId(),
+                        solicitacao.getUsuario().getNome(),
+                        pet.getNome(),
+                        solicitacao.getDataDeCriacao()
+                ));
+            }
+        }
+        return  resultado;
+    }
+    @Transactional
+    public  SolicitarVinculoResponseDTO processarSolicitacao(Long idSolicitacao, StatusDeVinculo novoStatus, Usuario usuario){
+        VinculoPet solicitacao =  vinculoPetRepository.findById(idSolicitacao).orElseThrow(()-> new PetNaoEncontradoException("solicitacao nao existe"));
+        VinculoPet meuVinculo = vinculoPetRepository.findByPetAndUsuario(solicitacao.getPet(), usuario).orElseThrow(()-> new PetNaoEncontradoException("solicitacao nao existe"));
+        if(meuVinculo.getPapel()!= Papel.DONO || meuVinculo.getStatus() != StatusDeVinculo.ACEITO){
+            throw new PetNaoEncontradoException("solicitacao nao existe");
+        }
+        if (novoStatus != StatusDeVinculo.ACEITO && novoStatus != StatusDeVinculo.RECUSADO){
+            throw new StatusDeVinculoInvalidoException("Só pode ser aceito ou recusado");
+        }
+        if (solicitacao.getStatus()!= StatusDeVinculo.PENDENTE){
+            throw new StatusDeVinculoInvalidoException("Esta solicitacao já foi respondida anteriormente");
+        }
+        solicitacao.setStatus(novoStatus);
+        vinculoPetRepository.save(solicitacao);
+
+        return new SolicitarVinculoResponseDTO(
+                   true,
+                    "concluido",
+                    novoStatus,
+                new SolicitarVinculoResponseDTO.DadosSolicitacaoDTO(
+                        solicitacao.getId(),
+                        solicitacao.getPet().getCodigoVinculo(),
+                        solicitacao.getPet().getNome(),
+                        solicitacao.getDataDeCriacao()
+                )
+
+        );
+
+
+    }
+
+    public List<PetResumoDTO> listarPets(Usuario usuario){
+        List<VinculoPet> vinculos = vinculoPetRepository.findByUsuarioAndStatus(usuario, StatusDeVinculo.ACEITO);
+        return vinculos.stream().map(v-> new PetResumoDTO(
+                v.getPet().getIdPet(),
+                v.getPet().getNome(),
+                v.getPet().getCodigoVinculo(),
+                v.getPapel().name()
+        )).toList();
+    }
 
 
     private String gerarCodigoBruto() {
@@ -111,4 +216,11 @@ public class PetService {
         }
         return codigo;
     }
-}
+   private VinculoPet buscarVinculoAceito(Pet pet, Usuario usuario) {
+      VinculoPet vinculo =  vinculoPetRepository.findByPetAndUsuario(pet, usuario).orElseThrow(()-> new PetNaoEncontradoException("Vinculo nao existe"));
+      if (vinculo.getStatus()!= StatusDeVinculo.ACEITO){
+          throw new PetNaoEncontradoException("Vinculo nao existe");
+      }
+      return vinculo;
+    }
+   }

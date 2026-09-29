@@ -69,6 +69,7 @@ public class PetService {
         );
    }
 
+    @Transactional(readOnly = true)
    public PetPerfilDTO visualizarPetPerfil(Long idPet, Usuario usuarioAutenticado){
         Pet pet = petRepository.findById(idPet).
                 orElseThrow(() -> new PetNaoEncontradoException("Pet nao encontrado"));
@@ -188,6 +189,7 @@ public class PetService {
 
     }
 
+    @Transactional(readOnly = true)
     public List<PetResumoDTO> listarPets(Usuario usuario){
         List<VinculoPet> vinculos = vinculoPetRepository.findByUsuarioAndStatus(usuario, StatusDeVinculo.ACEITO);
         return vinculos.stream().map(v-> new PetResumoDTO(

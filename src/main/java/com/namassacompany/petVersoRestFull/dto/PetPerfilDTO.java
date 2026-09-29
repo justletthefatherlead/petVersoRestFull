@@ -21,6 +21,8 @@ public record PetPerfilDTO(
 ) {
     public PetPerfilDTO(Pet pet){
         this(pet.getIdPet(), pet.getNome(), pet.getRaca(), pet.getEspecie(), pet.getPorte(), pet.getPeso(), pet.getSexo(),
-                (pet.getFoto() != null) ? Base64.getEncoder().encodeToString(pet.getFoto()): null, pet.getPerfilSensibilidade(), pet.getPersonalidades());
+                (pet.getFoto() != null) ? Base64.getEncoder().encodeToString(pet.getFoto()): null,
+                pet.getPerfilSensibilidade(),
+                List.copyOf(pet.getPersonalidades()));
     }
 }

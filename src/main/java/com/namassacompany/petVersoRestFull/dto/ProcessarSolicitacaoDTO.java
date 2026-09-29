@@ -6,6 +6,6 @@ import jakarta.validation.constraints.NotNull;
 
 public record ProcessarSolicitacaoDTO(
         @NotNull Long idSolicitacao,
-        @NotBlank StatusDeVinculo novoStatus
+        @NotNull StatusDeVinculo novoStatus
 ) {
 }

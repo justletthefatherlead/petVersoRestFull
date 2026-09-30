@@ -73,8 +73,9 @@ public class PetService {
    public PetPerfilDTO visualizarPetPerfil(Long idPet, Usuario usuarioAutenticado){
         Pet pet = petRepository.findById(idPet).
                 orElseThrow(() -> new PetNaoEncontradoException("Pet nao encontrado"));
-        buscarVinculoAceito(pet, usuarioAutenticado);
-        return new PetPerfilDTO(pet);
+        Papel papel = buscarVinculoAceito(pet, usuarioAutenticado).getPapel();
+
+        return new PetPerfilDTO(pet,papel);
    }
 
     public PetPerfilDTO addPerfilSensiAndPersonalit(Long idPet, AtualizarPetDTO pdto, Usuario usuario){
@@ -89,9 +90,11 @@ public class PetService {
         if (pdto.personalidades()!= null){
             pet.setPersonalidades(pdto.personalidades());
         }
-        return new PetPerfilDTO(petRepository.save(pet));
+
+        return new PetPerfilDTO(petRepository.save(pet),vinculo.getPapel());
     }
 
+    @Transactional
     public SolicitarVinculoResponseDTO solicitarVinculo(Usuario usuario, SolicitarVinculoDTO dto){
         String codigo  = dto.codigoVinculo();
         Pet pet = petRepository.findByCodigoVinculo(codigo)

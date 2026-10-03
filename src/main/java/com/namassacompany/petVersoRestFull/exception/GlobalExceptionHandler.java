@@ -59,4 +59,8 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleIllegalState(IllegalStateException ex){
         return ResponseEntity.status(HttpStatus.CONFLICT).body(ex.getMessage());
     }
+    @ExceptionHandler(RuntimeException.class)
+    public ResponseEntity<String> handleAcessoNegadoException(RuntimeException ex){
+        return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
+    }
 }

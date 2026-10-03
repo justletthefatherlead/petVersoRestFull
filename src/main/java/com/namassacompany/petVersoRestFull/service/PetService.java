@@ -1,6 +1,7 @@
 package com.namassacompany.petVersoRestFull.service;
 
 import com.namassacompany.petVersoRestFull.dto.*;
+import com.namassacompany.petVersoRestFull.exception.AcessoNegadoException;
 import com.namassacompany.petVersoRestFull.exception.PetNaoEncontradoException;
 import com.namassacompany.petVersoRestFull.exception.StatusDeVinculoInvalidoException;
 import com.namassacompany.petVersoRestFull.model.*;
@@ -83,7 +84,7 @@ public class PetService {
         Pet pet = petRepository.findById(idPet).orElseThrow(()-> new PetNaoEncontradoException("Pet nao encontrado"));
         VinculoPet vinculo = buscarVinculoAceito(pet, usuario);
         if (vinculo.getPapel()!= Papel.DONO){
-            throw new PetNaoEncontradoException("Seu papel nao perimite fazer alterações");
+            throw new AcessoNegadoException("Seu papel nao permite fazer alterações");
         }
         if(pdto.perfilDeSensibilidade()!= null){
             pet.setPerfilSensibilidade(pdto.perfilDeSensibilidade());
@@ -166,7 +167,7 @@ public class PetService {
         VinculoPet solicitacao =  vinculoPetRepository.findById(idSolicitacao).orElseThrow(()-> new PetNaoEncontradoException("solicitacao nao existe"));
         VinculoPet meuVinculo = vinculoPetRepository.findByPetAndUsuario(solicitacao.getPet(), usuario).orElseThrow(()-> new PetNaoEncontradoException("solicitacao nao existe"));
         if(meuVinculo.getPapel()!= Papel.DONO || meuVinculo.getStatus() != StatusDeVinculo.ACEITO){
-            throw new PetNaoEncontradoException("solicitacao nao existe");
+            throw new AcessoNegadoException("Voce nao tem permissao para realizar esta acao");
         }
         if (novoStatus != StatusDeVinculo.ACEITO && novoStatus != StatusDeVinculo.RECUSADO){
             throw new StatusDeVinculoInvalidoException("Só pode ser aceito ou recusado");
@@ -223,9 +224,9 @@ public class PetService {
         return codigo;
     }
     private VinculoPet buscarVinculoAceito(Pet pet, Usuario usuario) {
-      VinculoPet vinculo =  vinculoPetRepository.findByPetAndUsuario(pet, usuario).orElseThrow(()-> new PetNaoEncontradoException("Vinculo nao existe"));
+      VinculoPet vinculo =  vinculoPetRepository.findByPetAndUsuario(pet, usuario).orElseThrow(()-> new PetNaoEncontradoException("Pet nao encontrado"));
       if (vinculo.getStatus()!= StatusDeVinculo.ACEITO){
-          throw new PetNaoEncontradoException("Vinculo nao existe");
+          throw new PetNaoEncontradoException("Pet nao encontrado");
       }
       return vinculo;
     }

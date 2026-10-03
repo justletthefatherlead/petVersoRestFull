@@ -27,6 +27,7 @@ public class PetService {
         this.petRepository = petRepository;
         this.vinculoPetRepository = vinculoPetRepository;
     }
+
     @Transactional
    public PetCadastroResponseDTO cadastrar(PetCadastroDTO petdto, Usuario usuario){
        String codigoVinculo = gerarCodigoVinculo();
@@ -221,11 +222,13 @@ public class PetService {
         }
         return codigo;
     }
-   private VinculoPet buscarVinculoAceito(Pet pet, Usuario usuario) {
+    private VinculoPet buscarVinculoAceito(Pet pet, Usuario usuario) {
       VinculoPet vinculo =  vinculoPetRepository.findByPetAndUsuario(pet, usuario).orElseThrow(()-> new PetNaoEncontradoException("Vinculo nao existe"));
       if (vinculo.getStatus()!= StatusDeVinculo.ACEITO){
           throw new PetNaoEncontradoException("Vinculo nao existe");
       }
       return vinculo;
     }
+
+
    }

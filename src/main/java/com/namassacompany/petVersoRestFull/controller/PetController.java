@@ -71,4 +71,10 @@ public class PetController {
         List<PetResumoDTO> pets = petService.listarPets(usuario);
          return  ResponseEntity.ok(pets);
     }
+    @PutMapping("/{id}/foto")
+    public ResponseEntity<AtualizarFotoPetDTO> atualizarFotoPet(@PathVariable Long id ,@RequestBody AtualizarFotoPetDTO dto){
+        Usuario usuario =  (Usuario) SecurityContextHolder.getContext().getAuthentication().getPrincipal();
+       AtualizarFotoPetDTO atualizarFotoPetDTO = petService.atualizarFotoPet(id, usuario, dto);
+        return ResponseEntity.ok(atualizarFotoPetDTO);
+    }
 }

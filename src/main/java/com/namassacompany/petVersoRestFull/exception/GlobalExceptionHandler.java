@@ -63,4 +63,11 @@ public class GlobalExceptionHandler {
     public ResponseEntity<String> handleAcessoNegadoException(RuntimeException ex){
         return ResponseEntity.status(HttpStatus.FORBIDDEN).body(ex.getMessage());
     }
+    @ExceptionHandler(FotoInvalidaException.class)
+    public ResponseEntity<String> handFotoInvalida(FotoInvalidaException ex){
+        return ResponseEntity
+                .status(HttpStatus.BAD_REQUEST)
+                .body(ex.getMessage());
+    }
+
 }

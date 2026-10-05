@@ -2,6 +2,7 @@ package com.namassacompany.petVersoRestFull.service;
 
 import com.namassacompany.petVersoRestFull.dto.*;
 import com.namassacompany.petVersoRestFull.exception.AcessoNegadoException;
+import com.namassacompany.petVersoRestFull.exception.FotoInvalidaException;
 import com.namassacompany.petVersoRestFull.exception.PetNaoEncontradoException;
 import com.namassacompany.petVersoRestFull.exception.StatusDeVinculoInvalidoException;
 import com.namassacompany.petVersoRestFull.model.*;
@@ -29,6 +30,36 @@ public class PetService {
         this.vinculoPetRepository = vinculoPetRepository;
     }
 
+    @Transactional
+    public AtualizarFotoPetDTO atualizarFotoPet(Long id, Usuario usuario, AtualizarFotoPetDTO dto) {
+        Pet pet = petRepository.findById(id)
+                .orElseThrow(() -> new PetNaoEncontradoException("Pet não encontrado"));
+
+        VinculoPet vinculo = buscarVinculoAceito(pet, usuario);
+        if (vinculo.getPapel() != Papel.DONO) {
+            throw new AcessoNegadoException("Seu papel não permite fazer alterações");
+        }
+
+        if (dto.fotoBase64() == null || dto.fotoBase64().isBlank()) {
+            throw new FotoInvalidaException("Foto não informada");
+        }
+
+        byte[] foto;
+        try {
+            foto = Base64.getDecoder().decode(dto.fotoBase64());
+        } catch (IllegalArgumentException e) {
+            throw new FotoInvalidaException("Foto em formato Base64 inválido");
+        }
+
+        if (foto.length > TAMANHO_MAXIMO_FOTO) {
+            throw new FotoInvalidaException("Foto excede o tamanho máximo permitido");
+        }
+
+        pet.setFoto(foto);
+        Pet salvo = petRepository.save(pet);
+
+        return new AtualizarFotoPetDTO(Base64.getEncoder().encodeToString(salvo.getFoto()));
+    }
     @Transactional
    public PetCadastroResponseDTO cadastrar(PetCadastroDTO petdto, Usuario usuario){
        String codigoVinculo = gerarCodigoVinculo();
@@ -225,6 +256,7 @@ public class PetService {
       }
       return vinculo;
     }
+    private static final int TAMANHO_MAXIMO_FOTO = 5 * 1024 * 1024;
 
 
    }

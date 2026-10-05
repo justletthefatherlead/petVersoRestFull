@@ -197,12 +197,7 @@ public class PetService {
     @Transactional(readOnly = true)
     public List<PetResumoDTO> listarPets(Usuario usuario){
         List<VinculoPet> vinculos = vinculoPetRepository.findByUsuarioAndStatus(usuario, StatusDeVinculo.ACEITO);
-        return vinculos.stream().map(v-> new PetResumoDTO(
-                v.getPet().getIdPet(),
-                v.getPet().getNome(),
-                v.getPet().getCodigoVinculo(),
-                v.getPapel().name()
-        )).toList();
+        return vinculos.stream().map(PetResumoDTO::new).toList();
     }
 
 

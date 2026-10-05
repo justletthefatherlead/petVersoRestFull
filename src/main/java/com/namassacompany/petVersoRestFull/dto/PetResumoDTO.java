@@ -1,11 +1,20 @@
 package com.namassacompany.petVersoRestFull.dto;
 
 import com.namassacompany.petVersoRestFull.model.Papel;
+import com.namassacompany.petVersoRestFull.model.VinculoPet;
+
+import java.util.Base64;
 
 public record PetResumoDTO(
         Long idPet,
         String nome,
-        String codigoVinculo,
-        String papel
+        String papel,
+        String fotoPetBase64
 ) {
+    public PetResumoDTO(VinculoPet vinculo){
+        this(vinculo.getPet().getIdPet(),
+             vinculo.getPet().getNome(),
+             vinculo.getPapel().name(),
+                (vinculo.getPet().getFoto() != null) ? Base64.getEncoder().encodeToString(vinculo.getPet().getFoto()): null);
+    }
 }
